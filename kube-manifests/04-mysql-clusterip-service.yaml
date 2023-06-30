@@ -1,0 +1,21 @@
+apiVersion: v1
+# https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#service-v1-core
+kind: Service
+metadata: 
+  name: mysql
+spec:
+# since ClusterIP we do not need type: here.
+  selector:
+    app: mysql 
+    # this app: label must match that in the mysql deployment yaml.
+    # also this name is used as an env variable in the usermgmtwebapp deployment as well
+    # so that the webapp can connect to the mysql
+  ports: 
+    - port: 3306  
+  clusterIP: None # This means we are going to use Pod IP  
+  # this is headless mode. The dns name will be used to loadbalance to the pod ip address (not the node ip)
+  # headless mode is not for public communication, but for internal within the k8s cluster
+  # since there is only one replica it can go just to this single pod IP address. There will only be one address for
+  # dns resolution.
+  # https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#servicespec-v1-core
+  # "Setting this to "None" makes a "headless service" (no virtual IP), which is useful when direct endpoint connections are preferred and proxying is not required."  

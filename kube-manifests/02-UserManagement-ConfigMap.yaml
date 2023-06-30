@@ -1,0 +1,26 @@
+apiVersion: v1
+# https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.26/#configmap-v1-core
+kind: ConfigMap
+metadata:
+  name: usermanagement-dbcreation-script
+  #this will be used in the mysql-deployment.yaml as part of the array of the volume 
+data: 
+# https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.26/#configmap-v1-core
+  mysql_usermgmt.sql: |-
+    DROP DATABASE IF EXISTS webappdb;
+    CREATE DATABASE webappdb; 
+
+
+# CONFIG MAP
+# 1. A ConfigMap is an API object used to store non-confidential data in 
+# key-value pairs. 
+
+# 2. Pods can consume ConfigMaps as 
+## 2.1: environment variables, 
+## 2.2: command-line arguments, 
+## 2.3: or as configuration files in a volume. 
+## We are going to use this in our MySQL k8s Deployment  
+
+# 3. YAML Notation
+## YAML Notation: |-: "strip": remove the line feed, remove the trailing blank lines.
+## Additional YAML Notation Reference: https://stackoverflow.com/questions/3790454/how-do-i-break-a-string-in-yaml-over-multiple-lines

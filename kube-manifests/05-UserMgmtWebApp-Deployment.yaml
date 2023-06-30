@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+# since this is not core/v1 you must specify the apps of the apps/v1
+# https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#deployment-v1-apps
+kind: Deployment 
+metadata:
+# https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#objectmeta-v1-meta
+  name: usermgmt-webapp
+  labels:
+    app: usermgmt-webapp
+spec:
+# https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#deploymentspec-v1-apps
+  replicas: 1
+  selector:
+    matchLabels:
+      app: usermgmt-webapp
+      # this name is used in the UserMgmtWebApp service yaml. It must be the same.
+  template:  
+  # https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#objectmeta-v1-meta
+    metadata:
+      labels: 
+        app: usermgmt-webapp
+    spec:
+    # https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#podspec-v1-core
+    # in this podspec we are focusing on initContainers and containers
+      initContainers:
+      # see the notes below on initContainers from the link above
+      # the initContainer must complete successfully before the app container below is started.
+      # the definition below is based upon the example at this url link:  https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
+      # essentially the usermgmt-webapp will NOT start until the MySql container(pod) is confirmed as up and running.
+      # this is so that the connection initated from the usermgmt-webapp can be established properly and without timing failures.
+        - name: init-db
+          image: busybox:1.31
+          command: ['sh', '-c', 'echo -e "Checking for the availability of MySQL Server deployment"; while ! nc -z mysql 3306; do sleep 1; printf "-"; done; echo -e "  >> MySQL DB Server has started";'] 
+          # this is a simple 3306 port based socket test
+          # IMPORTANT NOTE: the "mysql 3306"  This mysql is the name of the service in mysql yaml. It is ClusterIP headless and this name will resolve to the pod ip address of the mysql pod.   
+          # once this script is success, the init-db is complete and can move to below to instantiate the app container.
+      containers:
+        - name: usermgmt-webapp
+          image: stacksimplify/kube-usermgmt-webapp:1.0.0-MySQLDB
+          # https://hub.docker.com/r/stacksimplify/kube-usermgmt-webapp/tags
+          ports: 
+            - containerPort: 8080
+            # Spring Boot runs on port 8080           
+          env:
+          # this webapp needs to connect to the backend mysql database
+            - name: DB_HOSTNAME
+              value: "mysql"   
+              # this is the mysql yaml service name. This must be "mysql"  
+              # in more detail: the mysql clusterip service is headless mode.  There is only 1 replica
+              # with headless mode the dns name is used to resolve to the pod (not node) ip address
+              # thus this will permit the usermgmtwebapp to connect to the mysql via the resolved pod ip address       
+            - name: DB_PORT
+              value: "3306"            
+            - name: DB_NAME
+              value: "webappdb"            
+            - name: DB_USERNAME
+              value: "root"            
+            - name: DB_PASSWORD
+              value: "dbpassword11" 
+              # this root password is configured in the mysql deployment yaml.       
+
+      # initContainers:  also see this link 
+      # https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
+      # under Concepts --> Workloads --> Pods ---> init containers
+      # "A Pod can have multiple containers running apps within it, but it can also have one or more init containers, which are run before the app containers are started."
+      # Init containers are exactly like regular containers, except:
+       #Init containers always run to completion.
+       #Each init container must complete successfully before the next one starts.
+      # If a Pod's init container fails, the kubelet repeatedly restarts that init container until it succeeds. 
+      # However, if the Pod has a restartPolicy of Never, and an init container fails during startup of that Pod, Kubernetes treats the overall Pod as failed. 

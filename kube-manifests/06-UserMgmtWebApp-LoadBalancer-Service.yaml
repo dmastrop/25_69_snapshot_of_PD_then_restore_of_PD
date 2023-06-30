@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: usermgmt-webapp-lb-service
+spec: 
+  type: LoadBalancer
+  selector: 
+    app: usermgmt-webapp
+    # this app: label must be the same as that in the UserMgmtWebApp deploy yaml.
+  ports: 
+    - port: 80 # Service Port
+      targetPort: 8080 # Container Port
+      # this is the container port specified in the UserMgmtWebApp deployment yaml under container definition.
