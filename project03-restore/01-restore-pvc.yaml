@@ -10,19 +10,19 @@ metadata:
   # the deployment.
   # thus we must have a new mysql-deployment.yaml with this one change (the rest of it is the same)
   
-  spec:
-    dataSource:
-    # this is required if making a PVC from a snapshot. This is added to the original standard PVC
-      name: my-snapshot1
-      # this is the name of the VolumeSnapshot.yaml snapshot
-      kind: VolumeSnapshot
-      # this is the kind: from the VolumeSnapshot.yaml 
-      apiGroup: snapshot.storage.k8s.io
-      # apiGroup is the same as the apiVersion in both the VolumeSnapshotClass and SnapshotClass.yaml files
+spec:
+  dataSource:
+  # this is required if making a PVC from a snapshot. This is added to the original standard PVC
+    name: my-snapshot1
+    # this is the name of the VolumeSnapshot.yaml snapshot
+    kind: VolumeSnapshot
+    # this is the kind: from the VolumeSnapshot.yaml 
+    apiGroup: snapshot.storage.k8s.io
+    # apiGroup is the same as the apiVersion in both the VolumeSnapshotClass and SnapshotClass.yaml files
   
-    storageClassName: standard-rwo
-    accessModes:
-      - ReadWriteOnce
-    resources:
-      requests:
-        storage: 4Gi
+  storageClassName: standard-rwo
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 4Gi
