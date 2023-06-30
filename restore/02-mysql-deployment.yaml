@@ -39,8 +39,11 @@ spec:
             name: usermanagement-dbcreation-script
 
 # important overal note:
-# The new PVC will refer to the snapshot yaml by name.  
+# The new restore PVC will refer to the snapshot yaml by name.  
 # The claimName in the volume definition in the new deployment yaml wil refer to this new pvc-restore yaml by name (see above). 
 # Thus the new deployment is linked to the new PVC and the new PVC is linked to the snapshot yaml.  
-# in this way the new deployment of the mysql will be with this snapshot volume and we should see the original users in the database.          
+# in this way the new deployment of the mysql will be with this snapshot volume and we should see the original users in the database.  
+# the new mysql deployment must refer to this new restore PVC, and once deployed, automatically the frontend will connect to the mysql clusterIP
+# the new underlying drive will be the new snapshot volume.
+# the original volume will have one user, but snapshot will have 3 users.        
 
