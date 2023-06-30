@@ -1,5 +1,6 @@
 apiVersion: snapshot.storage.k8s.io/v1
 kind: VolumeSnapshot
+# https://kubernetes.io/docs/concepts/storage/volume-snapshots/
 metadata:
   name: my-snapshot1
   # this name will be used to link the PVC restore to this snapshot so that we can

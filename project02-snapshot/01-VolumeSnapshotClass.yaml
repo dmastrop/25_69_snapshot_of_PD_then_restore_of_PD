@@ -1,9 +1,11 @@
 apiVersion: snapshot.storage.k8s.io/v1
 kind: VolumeSnapshotClass
+# https://kubernetes.io/docs/concepts/storage/volume-snapshot-classes/
 metadata:
   name: my-snapshotclass
   # this name will be used to reference this class from the volume snapshot yaml.
 driver: pd.csi.storage.gke.io
+# this driver:  is the same as the provisioner: for pd (persitent disk)
 deletionPolicy: Delete
 #parameters: 
 #  storage-locations: us-east2
