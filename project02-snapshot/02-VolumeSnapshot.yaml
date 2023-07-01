@@ -4,8 +4,8 @@ kind: VolumeSnapshot
 metadata:
   name: my-snapshot1
   # this name will be used to link the PVC restore to this snapshot so that we can
-  # run the PVC restore yaml to restore the deployment from this snapshot (this will be done with a new deployment mysql yaml that refers to the pvc-restore which
-  # has a dataSource of mysnapshot-1 ).
+  # run the PVC restore yaml to restore the deployment from this snapshot (this will be done with a new deployment mysql yaml that refers to the new pvc-restore which
+  # has a dataSource of my-snapshot-1 ).
 spec:
   volumeSnapshotClassName: my-snapshotclass
   # this is the class name specified in the volumesnapshotclass yaml
@@ -13,5 +13,5 @@ spec:
     persistentVolumeClaimName: mysql-pv-claim
     # this is the same name from the pvc yaml
     # we are referencing the PVC name that is used for the deployment project in the
-    # kube-manifests folder. This is the volume that we are taking a snapshot of.
-    # ....the same volume claimed in that deployment.
+    # kube-manifests folder. IMPORTANT: This is the volume that we are taking a snapshot of (after adding the 2 addtinonal users).
+    # ....the same volume claimed in that original mysql deployment.
